@@ -23,6 +23,7 @@ class Trip:
 		self.travel_time = int(travel_time)
 
 def get_all(size):
+	print "Fetching records from database..."
 	db,cursor = Connection.get_connection()
 	cursor.execute("use ridesharing")
 	tripList=[]
@@ -39,7 +40,7 @@ def get_all(size):
 		end_time = datetime.datetime.strftime(end_time,"%H:%M:%S")
 		while get == True:
 			window_trip_list=[]
-			query = "select * from trips where trip_date='%s' and pickup_time between '%s' and '%s' order by trip_distance desc"%(start_date,start_time,end_time)
+			query = "select * from trips where trip_date='%s' and pickup_time between '%s' and '%s' order by distance desc"%(start_date,start_time,end_time)
 			cursor.execute(query)
 			result = cursor.fetchall()
 			for row in result:
