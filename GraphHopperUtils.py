@@ -43,7 +43,3 @@ def distance_for_multiple_destinations(source_latitude, source_longitude, first_
     except URLError:
         result = [-1, -1]
     return result
-#print distance_for_a_destination(40.644104, -73.782665, 40.770077, -73.990524)
-#print distance_for_a_destination(40.644104, -73.782665, 40.744759, -74.060325)
-#print distance_for_multiple_destinations(40.644104, -73.782665, 40.770077, -73.990524, 40.744759, -74.060325)
-#print distance_for_multiple_destinations(40.737015, -73.98833, 40.744759, -74.060325, 0, 0)
