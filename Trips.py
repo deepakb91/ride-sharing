@@ -23,11 +23,13 @@ class Trip:
 		self.travel_time = int(travel_time)
 
 def get_all(size):
-	print "Fetching records from database..."
+	print "Establishing connection to the database..."
 	db,cursor = Connection.get_connection()
+	print "Connection established."
+	print "Fetching records from database..."
 	cursor.execute("use ridesharing")
 	tripList=[]
-	for i in range(0,1):
+	for i in range(1):
 		start=0
 		stop=size+start
 		get=True
@@ -62,6 +64,10 @@ def get_all(size):
 				end_time = datetime.timedelta(0,stop)
 				end_time = datetime.datetime.strptime(str(end_time),"%H:%M:%S")
 				end_time = datetime.datetime.strftime(end_time,"%H:%M:%S")
+	total_trips = 0
+	for trip_set in tripList:
+		total_trips+=len(trip_set)
+	print str(total_trips) + " individual trips were found in the list."	
 	Graph.create_graph(tripList)
 
 get_all(3600)

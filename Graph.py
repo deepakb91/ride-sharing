@@ -6,40 +6,40 @@ def create_graph(tripList):
 	merged_history = {}
 	merged_trip_list=[]
 	lone_trip_list=[]
+	total_trips = 0
 	#for i in range(len(tripList)):
-	for i in range(1):
-		#print "First"
+	for i in range(2):
 		trip_set = tripList[i]
+		total_trips+=len(trip_set)
 		merged_trip_set = []
 		for j in range(len(trip_set)):
-			#print "Second" + str(j)
-			#G=nx.Graph()
-			#G.add_node(trip_set[j].trip_id)
+			merged_trip = []
+			shouldAppend = False 
+			#print "Checking for trip - " + str(j+1) 
 			if trip_set[j].trip_id not in merged_history:
-				merged_trip = []
 				first_add = True
 				gain = 0.0
 				trip_id = 0
 				existing_passengers = trip_set[j].passengers
 				previous_trip = trip_set[j]
 				previous_trip_id = trip_set[j].trip_id
-				isContinue = True 
-				while existing_passengers < 4 and isContinue ==True:
-					#print "While"
+				isContinue = True
+				while existing_passengers < 4 and isContinue == True:
 					for k in range(len(trip_set)):
-						#print "Third" + str(k)
-						if trip_set[k].trip_id not in merged_history and trip_set[k].trip_id != previous_trip_id:
+						if (trip_set[k].trip_id not in merged_history) and (trip_set[k].trip_id != previous_trip_id):
 							if (existing_passengers + trip_set[k].passengers) > 4:
 								pass
 							else:
-								new_gain = distance_gain(trip_set[j],trip_set[k])
+								new_gain = distance_gain(previous_trip,trip_set[k])
 								if new_gain > gain:
 									gain=new_gain
 									trip = trip_set[k]
-									trip_id = trip.trip_id
-						if k == len(trip_set) -1:
-							isContinue=False			
+									trip_id = trip.trip_id							
 					if gain != 0.0:
+						print "Previous - " + str(previous_trip_id) + " Current - " + str(trip_id)
+						print (trip_id not in merged_history)
+						print trip_id != previous_trip_id
+						shouldAppend = True
 						if first_add == True:
 							merged_history[previous_trip_id] = previous_trip_id
 							merged_trip.append(previous_trip_id)
@@ -48,11 +48,26 @@ def create_graph(tripList):
 						previous_trip = trip
 						previous_trip_id = 	trip_id
 						merged_trip.append(trip_id)
-						existing_passengers = existing_passengers + trip_set[k].passengers			
-			merged_trip_set.append(merged_trip)
-		#print str(len(trip_set)) + " trips was reduced to " + str(len(merged_trip)) + " trips"			
-		merged_trip_list.append(merged_trip_set)		
+						existing_passengers = existing_passengers + trip.passengers
+					else:
+						isContinue = False				
+			if shouldAppend == True:
+				print merged_trip 
+				merged_trip_set.append(merged_trip)		
+		merged_trip_list.append(merged_trip_set)
 
+	merged_trips_count=0
+	for trip_set in merged_trip_list:
+		merged_trips_count+=len(trip_set)
+
+	
+	print "Now we have " + str(merged_trips_count) + " trips after merging."
+	'''
+	print "------------"
+	for trip_set in merged_trip_list:
+		for merged_trips in trip_set:
+			print merged_trips
+	''' 	
 
 
 def distance_gain(first_trip,second_trip):
