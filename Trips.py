@@ -67,7 +67,7 @@ def get_all(size):
 	total_trips = 0
 	for trip_set in tripList:
 		total_trips+=len(trip_set)
-	print str(total_trips) + " individual trips were found in the list."	
-	Graph.create_graph(tripList)
+		break
 
-get_all(3600)
+	print str(total_trips) + " individual trips were found in the database."	
+	Graph.create_graph(tripList)
