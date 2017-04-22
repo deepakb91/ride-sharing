@@ -72,7 +72,7 @@ def create_graph(tripList):
 	print str(lone_trips_count) + " trips are unmerged"
 	print "Calculating cost saved..."
 	print str(total_original_distance) + " miles was travelled by the taxis before merging"
-	total_original_cost = total_original_distance + (total_original_distance * 0.25)
+	total_original_cost = total_original_distance + (total_trips * 0.25)
 	print "Total original cost: $" + str(total_original_cost)
 	estimate_cost_saved(merged_trip_list)
 	
