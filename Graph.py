@@ -70,14 +70,17 @@ def create_graph(tripList):
 				lone_trips_count+=1				
 	print "Now we have " + str(merged_trips_count + lone_trips_count) + " trips after merging."
 	print str(lone_trips_count) + " trips are unmerged"
-	optimize_path(merged_trip_list)
-	'''
 	print "Calculating cost saved..."
 	print str(total_original_distance) + " miles was travelled by the taxis before merging"
 	total_original_cost = total_original_distance + (total_trips * 0.25)
 	print "Total original cost: $" + str(total_original_cost)
+	print "No Walking"
+	print "----------"
 	estimate_cost_saved(merged_trip_list)
-	'''
+	print "With Walking"
+	print "------------"
+	optimize_path(merged_trip_list)
+	estimate_cost_saved(merged_trip_list)
 def distance_gain(first_trip,second_trip):
 	result = GraphHopperUtils.distance_for_multiple_destinations(40.644104, -73.782665, first_trip.dropoff_latitude,first_trip.dropoff_longitude,second_trip.dropoff_latitude,second_trip.dropoff_longitude)
 	first_distance = first_trip.distance
@@ -111,10 +114,38 @@ def optimize_path(merged_trip_list):
 	result = []
 	for merged_trip_set in merged_trip_list:
 		for trips in merged_trip_set:
+			total_individual_distance = 0
 			coordinates = (40.644104, -73.782665)
 			for trip in trips:
+				total_individual_distance+=trip.distance
+				coordinates = coordinates + (trip.dropoff_latitude,trip.dropoff_longitude) 
+			result = GraphHopperUtils.distance_from_jfk(coordinates)
+			merged_trip_distance = result[0]
+			source = (40.644104, -73.782665)
+			reversed_trips = list(reversed(trips))
+			for id, trip in enumerate(reversed_trips):
+				coordinates = source
 				coordinates = coordinates + (trip.dropoff_latitude,trip.dropoff_longitude)
-			result = GraphHopperUtils.get_coordinates(coordinates)
-			break
-    	print result
+				result = GraphHopperUtils.get_coordinates(coordinates)
+				reversed_coordinates = list(reversed(result["coordinates"]))
+				for i in range(len(reversed_coordinates)): 
+					intersection_coordinate = tuple([reversed_coordinates[i][1],reversed_coordinates[i][0]])
+					intermediate_coordinate = intersection_coordinate + (trip.dropoff_latitude,trip.dropoff_longitude)
+					intermediate_result = GraphHopperUtils.distance_from_source(intermediate_coordinate)
+					distance = intermediate_result[0]																																																		
+					if(distance < 0.26):
+						if (id+1 == len(reversed_trips)):
+							trip.dropoff_latitude = intersection_coordinate[0]
+							trip.dropoff_longitude = intersection_coordinate[1]
+						else:	
+							for i in range(id+1,len(reversed_trips)):
+								coordinates = coordinates + (reversed_trips[i].dropoff_latitude,reversed_trips[i].dropoff_longitude)
+							result = GraphHopperUtils.distance_from_jfk(coordinates)
+							reroute_distance = result[0]
+							if reroute_distance < merged_trip_distance:
+								trip.dropoff_latitude = intersection_coordinate[0]
+								trip.dropoff_longitude = intersection_coordinate[1]
+					else:
+						break			
+					source = (trip.dropoff_latitude,trip.dropoff_longitude)
 

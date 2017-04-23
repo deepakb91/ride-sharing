@@ -48,7 +48,7 @@ def distance_from_jfk(*cordinates):
     queryString = str(cordinates[0][0]) + ',' + str(cordinates[0][1])
     for i in range(2,len(cordinates[0]),2):
         queryString+="&point=" + str(cordinates[0][i]) + ',' + str(cordinates[0][i+1])
-    queryString+="&optimize=true&vehicale=car"    
+    queryString+="&optimize=true&vehicle=car"    
     request_string = "http://localhost:8989/route?point=" + queryString
     request = Request(request_string)
     try:
@@ -66,7 +66,7 @@ def get_coordinates(*cordinates):
     queryString = str(cordinates[0][0]) + ',' + str(cordinates[0][1])
     for i in range(2,len(cordinates[0]),2):
         queryString+="&point=" + str(cordinates[0][i]) + ',' + str(cordinates[0][i+1])
-    queryString+="&optimize=true&vehicale=car&points_encoded=false"    
+    queryString+="&optimize=true&vehicle=car&points_encoded=false"    
     request_string = "http://localhost:8989/route?point=" + queryString
     request = Request(request_string)
     try:
@@ -76,6 +76,24 @@ def get_coordinates(*cordinates):
         result = paths[0]["points"]
     except URLError:
         result = [-1, -1]
-    return result    
+    return result
+
+def distance_from_source(*cordinates):
+    queryString = str(cordinates[0][0]) + ',' + str(cordinates[0][1])
+    for i in range(2,len(cordinates[0]),2):
+        queryString+="&point=" + str(cordinates[0][i]) + ',' + str(cordinates[0][i+1])
+    queryString+="&optimize=true"    
+    request_string = "http://localhost:8989/route?point=" + queryString
+    request = Request(request_string)
+    try:
+        response = urlopen(request)
+        output = json.loads(response.read())
+        paths = output["paths"]
+        distance = meter_to_mile(paths[0]["distance"])
+        time = get_time_in_minutes(paths[0]["time"])
+        result = [distance, time]
+    except URLError:
+        result = [-1, -1]
+    return result       
 #print distance_from_jfk(40.737015, -73.98833, 40.774783, -74.02082)
 #print distance_from_jfk((40.737015, -73.98833, 40.774783, -74.02082, 40.744759, -74.060325))    
