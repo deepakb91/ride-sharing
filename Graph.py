@@ -70,12 +70,13 @@ def create_graph(tripList):
 				lone_trips_count+=1				
 	print "Now we have " + str(merged_trips_count + lone_trips_count) + " trips after merging."
 	print str(lone_trips_count) + " trips are unmerged"
+	'''
 	print "Calculating cost saved..."
 	print str(total_original_distance) + " miles was travelled by the taxis before merging"
 	total_original_cost = total_original_distance + (total_trips * 0.25)
 	print "Total original cost: $" + str(total_original_cost)
 	estimate_cost_saved(merged_trip_list)
-	
+	'''
 def distance_gain(first_trip,second_trip):
 	result = GraphHopperUtils.distance_for_multiple_destinations(40.644104, -73.782665, first_trip.dropoff_latitude,first_trip.dropoff_longitude,second_trip.dropoff_latitude,second_trip.dropoff_longitude)
 	first_distance = first_trip.distance
@@ -104,3 +105,12 @@ def estimate_cost_saved(merged_trip_list):
 			total_merged_trip_cost+=merged_trip_cost
 	print "After merging, the taxis will have to travel " + str(total_merged_trip_distance) + " miles."			
 	print "Total cost after merging :$" + str(total_merged_trip_cost)
+
+def optimize_path(merged_trip_list):
+	for merged_trip_set in merged_trip_list:
+		for trips in merged_trip_set:
+			coordinates = (40.644104, -73.782665)
+			for trip in trips:
+				coordinates = coordinates + (trip.dropoff_latitude,trip.dropoff_longitude)
+			result = GraphHopperUtils.distance_from_jfk(coordinates)
+
