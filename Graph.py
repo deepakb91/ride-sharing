@@ -107,10 +107,13 @@ def estimate_cost_saved(merged_trip_list):
 	print "Total cost after merging :$" + str(total_merged_trip_cost)
 
 def optimize_path(merged_trip_list):
+	result = []
 	for merged_trip_set in merged_trip_list:
 		for trips in merged_trip_set:
 			coordinates = (40.644104, -73.782665)
 			for trip in trips:
 				coordinates = coordinates + (trip.dropoff_latitude,trip.dropoff_longitude)
-			result = GraphHopperUtils.distance_from_jfk(coordinates)
+			result = GraphHopperUtils.get_coordinates(coordinates)
+			break
+    print result
 
