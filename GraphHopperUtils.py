@@ -73,7 +73,7 @@ def get_coordinates(*cordinates):
         response = urlopen(request)
         output = json.loads(response.read())
         paths = output["paths"]
-        result = paths[0].points
+        result = paths[0]["points"]
     except URLError:
         result = [-1, -1]
     return result    

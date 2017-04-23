@@ -70,6 +70,7 @@ def create_graph(tripList):
 				lone_trips_count+=1				
 	print "Now we have " + str(merged_trips_count + lone_trips_count) + " trips after merging."
 	print str(lone_trips_count) + " trips are unmerged"
+	optimize_path(merged_trip_list)
 	'''
 	print "Calculating cost saved..."
 	print str(total_original_distance) + " miles was travelled by the taxis before merging"
@@ -115,5 +116,5 @@ def optimize_path(merged_trip_list):
 				coordinates = coordinates + (trip.dropoff_latitude,trip.dropoff_longitude)
 			result = GraphHopperUtils.get_coordinates(coordinates)
 			break
-    print result
+    	print result
 
