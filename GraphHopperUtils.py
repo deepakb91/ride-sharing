@@ -23,7 +23,7 @@ def distance_for_a_destination(source_latitude, source_longitude, destination_la
         distance = meter_to_mile(paths[0]["distance"])
         time = get_time_in_minutes(paths[0]["time"])
         result = [distance, time]
-    except URLError:
+    except Exception:
         result = [-1, -1]
     return result
 
@@ -40,7 +40,7 @@ def distance_for_multiple_destinations(source_latitude, source_longitude, first_
         distance = meter_to_mile(paths[0]["distance"])
         time = get_time_in_minutes(paths[0]["time"])
         result = [distance, time]
-    except URLError:
+    except Exception:
         result = [-1, -1]
     return result
 
@@ -58,7 +58,7 @@ def distance_from_jfk(*cordinates):
         distance = meter_to_mile(paths[0]["distance"])
         time = get_time_in_minutes(paths[0]["time"])
         result = [distance, time]
-    except URLError:
+    except Exception:
         result = [-1, -1]
     return result
 
@@ -74,7 +74,7 @@ def get_coordinates(*cordinates):
         output = json.loads(response.read())
         paths = output["paths"]
         result = paths[0]["points"]
-    except URLError:
+    except Exception:
         result = [-1, -1]
     return result
 
@@ -92,7 +92,7 @@ def distance_from_source(*cordinates):
         distance = meter_to_mile(paths[0]["distance"])
         time = get_time_in_minutes(paths[0]["time"])
         result = [distance, time]
-    except URLError:
+    except Exception:
         result = [-1, -1]
     return result       
 #print distance_from_jfk(40.737015, -73.98833, 40.774783, -74.02082)

@@ -29,7 +29,7 @@ def get_all(size):
 	print "Fetching records from database..."
 	cursor.execute("use ridesharing")
 	tripList=[]
-	for i in range(1):
+	for i in range(31):
 		start=0
 		stop=size+start
 		get=True
@@ -67,7 +67,6 @@ def get_all(size):
 	total_trips = 0
 	for trip_set in tripList:
 		total_trips+=len(trip_set)
-		break
 
 	print str(total_trips) + " individual trips were found in the database."	
 	Graph.create_graph(tripList)

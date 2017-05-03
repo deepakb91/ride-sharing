@@ -7,8 +7,8 @@ def create_graph(tripList):
 	merged_trip_id_list = []
 	merged_trip_list = []
 	total_trips = 0
-	#for i in range(len(tripList)):
-	for i in range(1):
+	for i in range(len(tripList)):
+	#for i in range(1):
 		trip_set = tripList[i]
 		total_trips+=len(trip_set)
 		merged_trip_id_set = []
@@ -16,8 +16,7 @@ def create_graph(tripList):
 		for j in range(len(trip_set)):
 			merged_trip_id = []
 			merged_trip = []
-			shouldAppend = False 
-			#print "Checking for trip - " + str(j+1) 
+			shouldAppend = False  
 			if trip_set[j].trip_id not in merged_history:
 				first_add = True
 				trip_id = 0
@@ -33,7 +32,7 @@ def create_graph(tripList):
 								pass
 							else:
 								new_gain = distance_gain(previous_trip,trip_set[k])
-								if new_gain > gain:
+								if new_gain > gain and new_gain < 1:
 									gain=new_gain
 									trip = trip_set[k]
 									trip_id = trip.trip_id							
@@ -59,15 +58,17 @@ def create_graph(tripList):
 		merged_trip_list.append(merged_trip_set)
 	merged_trips_count=0
 	lone_trips_count = 0
+	lone_trips_distance = 0
 	for trip_set in merged_trip_id_list:
 		merged_trips_count+=len(trip_set)
 	total_original_distance = 0;
-	#for i in range(len(tripList)):
-	for i in range(1):
+	for i in range(len(tripList)):
+	#for i in range(1):
 		for trips in tripList[i]:
 			total_original_distance+=trips.distance
 			if trips.trip_id not in merged_history:
-				lone_trips_count+=1				
+				lone_trips_count+=1
+				lone_trips_distance+=trips.distance				
 	print "Now we have " + str(merged_trips_count + lone_trips_count) + " trips after merging."
 	print str(lone_trips_count) + " trips are unmerged"
 	print "Calculating cost saved..."
@@ -76,11 +77,17 @@ def create_graph(tripList):
 	print "Total original cost: $" + str(total_original_cost)
 	print "No Walking"
 	print "----------"
-	estimate_cost_saved(merged_trip_list)
+	data = estimate_cost_saved(merged_trip_list)
+	print "After merging, the taxis will have to travel " + str(data[0] + lone_trips_distance) + " miles."			
+	print "Total cost after merging :$" + str(data[1] + (lone_trips_distance + (lone_trips_count * 0.25)))
+
 	print "With Walking"
 	print "------------"
 	optimize_path(merged_trip_list)
-	estimate_cost_saved(merged_trip_list)
+	data = estimate_cost_saved(merged_trip_list)
+	print "After merging, the taxis will have to travel " + str(data[0] + lone_trips_distance) + " miles."			
+	print "Total cost after merging :$" + str(data[1] + (lone_trips_distance + (lone_trips_count * 0.25)))
+
 def distance_gain(first_trip,second_trip):
 	result = GraphHopperUtils.distance_for_multiple_destinations(40.644104, -73.782665, first_trip.dropoff_latitude,first_trip.dropoff_longitude,second_trip.dropoff_latitude,second_trip.dropoff_longitude)
 	first_distance = first_trip.distance
@@ -107,8 +114,7 @@ def estimate_cost_saved(merged_trip_list):
 			for trip in trips:
 				merged_trip_cost+=(fraction*trip.distance) + 0.5
 			total_merged_trip_cost+=merged_trip_cost
-	print "After merging, the taxis will have to travel " + str(total_merged_trip_distance) + " miles."			
-	print "Total cost after merging :$" + str(total_merged_trip_cost)
+	return [total_merged_trip_distance,total_merged_trip_cost]		
 
 def optimize_path(merged_trip_list):
 	result = []
@@ -127,25 +133,26 @@ def optimize_path(merged_trip_list):
 				coordinates = source
 				coordinates = coordinates + (trip.dropoff_latitude,trip.dropoff_longitude)
 				result = GraphHopperUtils.get_coordinates(coordinates)
-				reversed_coordinates = list(reversed(result["coordinates"]))
-				for i in range(len(reversed_coordinates)): 
-					intersection_coordinate = tuple([reversed_coordinates[i][1],reversed_coordinates[i][0]])
-					intermediate_coordinate = intersection_coordinate + (trip.dropoff_latitude,trip.dropoff_longitude)
-					intermediate_result = GraphHopperUtils.distance_from_source(intermediate_coordinate)
-					distance = intermediate_result[0]																																																		
-					if(distance < 0.26):
-						if (id+1 == len(reversed_trips)):
-							trip.dropoff_latitude = intersection_coordinate[0]
-							trip.dropoff_longitude = intersection_coordinate[1]
-						else:	
-							for i in range(id+1,len(reversed_trips)):
-								coordinates = coordinates + (reversed_trips[i].dropoff_latitude,reversed_trips[i].dropoff_longitude)
-							result = GraphHopperUtils.distance_from_jfk(coordinates)
-							reroute_distance = result[0]
-							if reroute_distance < merged_trip_distance:
+				if "coordinates" in result:
+					reversed_coordinates = list(reversed(result["coordinates"]))
+					for i in range(len(reversed_coordinates)): 
+						intersection_coordinate = tuple([reversed_coordinates[i][1],reversed_coordinates[i][0]])
+						intermediate_coordinate = intersection_coordinate + (trip.dropoff_latitude,trip.dropoff_longitude)
+						intermediate_result = GraphHopperUtils.distance_from_source(intermediate_coordinate)
+						distance = intermediate_result[0]																																																		
+						if(distance < 0.26):
+							if (id+1 == len(reversed_trips)):
 								trip.dropoff_latitude = intersection_coordinate[0]
 								trip.dropoff_longitude = intersection_coordinate[1]
-					else:
-						break			
-					source = (trip.dropoff_latitude,trip.dropoff_longitude)
+							else:	
+								for i in range(id+1,len(reversed_trips)):
+									coordinates = coordinates + (reversed_trips[i].dropoff_latitude,reversed_trips[i].dropoff_longitude)
+								result = GraphHopperUtils.distance_from_jfk(coordinates)
+								reroute_distance = result[0]
+								if reroute_distance < merged_trip_distance:
+									trip.dropoff_latitude = intersection_coordinate[0]
+									trip.dropoff_longitude = intersection_coordinate[1]
+						else:
+							break			
+						source = (trip.dropoff_latitude,trip.dropoff_longitude)
 
