@@ -1,6 +1,5 @@
-import networkx as nx
 import GraphHopperUtils
-import math
+
 def create_graph(tripList):
 	print "Merging..."
 	merged_history = {}
