@@ -21,8 +21,12 @@ cursor.execute(table_query)
 cursor.execute("use ridesharing")
 
 curr_dir = os.getcwd()
-#file_list = ["trip_data_1.csv","trip_data_2.csv","trip_data_3.csv","trip_data_4.csv","trip_data_5.csv","trip_data_6.csv","trip_data_7.csv","trip_data_8.csv","trip_data_9.csv","trip_data_10.csv","trip_data_11.csv","trip_data_12.csv"]
-file_list = ["trip_data_1.csv"]
+processAll = True
+file_list = []
+if processAll:
+    file_list = ["trip_data_1.csv","trip_data_2.csv","trip_data_3.csv","trip_data_4.csv","trip_data_5.csv","trip_data_6.csv","trip_data_7.csv","trip_data_8.csv","trip_data_9.csv","trip_data_10.csv","trip_data_11.csv","trip_data_12.csv"]
+else:
+    file_list = ["trip_data_1.csv"]
 insert_count = 0
 for file_name in file_list:
     rowCount = 0
