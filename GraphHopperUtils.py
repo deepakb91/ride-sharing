@@ -94,6 +94,4 @@ def distance_from_source(*cordinates):
         result = [distance, time]
     except Exception:
         result = [-1, -1]
-    return result       
-#print distance_from_jfk(40.737015, -73.98833, 40.774783, -74.02082)
-#print distance_from_jfk((40.737015, -73.98833, 40.774783, -74.02082, 40.744759, -74.060325))    
+    return result        
